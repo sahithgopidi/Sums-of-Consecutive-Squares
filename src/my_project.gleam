@@ -132,7 +132,6 @@ pub fn main() {
         Ok(n), Ok(k) if k > 0 && n >= k -> {
           let output_subject = process.new_subject()
 
-          // Simple fallback - use 16 workers instead of trying to get system info
           let num_workers = 4
 
           let max_start = n
@@ -150,7 +149,6 @@ pub fn main() {
             |> list.filter_map(fn(opt) { option.to_result(opt, Nil) })
           let num_assigned = list.length(ranges)
 
-          // Create boss first
           let boss_builder =
             actor.new(BossState([], num_assigned, output_subject))
             |> actor.on_message(boss_handler)
@@ -160,7 +158,6 @@ pub fn main() {
             Ok(boss_started) -> {
               let boss_subject = boss_started.data
 
-              // Now start workers and send them the boss subject
               list.each(ranges, fn(range) {
                 let worker_res = start_worker()
                 case worker_res {
